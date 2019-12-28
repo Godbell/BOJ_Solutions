@@ -5,7 +5,7 @@
 
 using namespace std;
 
-void turnTable(array<array<int,2>,2>&);
+void turnTable(array<array<double,2>,2>&);
 template<class T>
 void SWAP(T& p_valueA, T& p_valueB)
 {
@@ -27,22 +27,29 @@ int main()
     for(int i = 0 ; i < record.size() ; i++)
     {
         record[i] = table[0][0] / table[1][0] + table[0][1] / table[1][1];
+        turnTable(table);
     }
 
-    int minRec{0};
-    int minRot{0};
+    double maxRec{0};
+    int maxRot{0};
 
     for(int i = 0 ; i < record.size() ; i++)
     {
-        if(record[i] < minRot)
+        if(record[i] > maxRec)
         {
-            minRec = record[i];
-            minRot = i;
-            break;
+            maxRec = record[i];
         }
     }
 
-    cout << minRot;
+    for(int i = 0 ; i < record.size(); i++)
+    {
+        if(record[i] == maxRec)
+        {
+            maxRot = i;
+            cout << maxRot;
+            return 0;
+        }
+    }
 
     return 0;
 }
