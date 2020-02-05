@@ -1,337 +1,365 @@
 #include <iostream>
+#include <vector>
+#include <string>
 
 using namespace std;
 
-struct boardObject
+string directions[] = {"UP", "DOWN", "LEFT", "RIGHT"};
+
+struct position
 {
-	char TYPE = NULL;
-	char BIZ = NULL;
-	int x = -1;
-	int y = -1;
-
-	boardObject* left;
-	boardObject* right;
-	boardObject* up;
-	boardObject* down;
-
-	boardObject* L_end;
-	boardObject* R_end;
-	boardObject* U_end;
-	boardObject* D_end;
+	int x;
+	int y;
 };
 
-// directiosn: u, d, l, r
-
-// returns the end tile of each direction
-boardObject* searchEnd(boardObject* board, char direction)
+struct set
 {
-	if (board->TYPE == '#')
-	{
-		return board;
-	}
+	position RED;
+	position BLUE;
+	bool redIn;
+	bool blueIn;
+};
 
-	boardObject* End = board;
+position FindEnd(char **board, position biz, position other, string direction)
+{
+	int cur_biz_x = biz.x;
+	int cur_biz_y = biz.y;
+	position end;
 
-	if (direction == 'u')
+	if(direction == "UP")
 	{
-		while ((End->up)->TYPE != '#')
+		while(board[cur_biz_x][cur_biz_y] == '.')
 		{
-			End = End->up;
+			if(board[cur_biz_x][cur_biz_y - 1] == '#'
+				|| ((cur_biz_y - 1 == other.y) && cur_biz_x == other.x))
+			{
+				end.x = cur_biz_x;
+				end.y = cur_biz_y;
+				return end;
+			}
+			--cur_biz_y;
 		}
-		return End;
 	}
-
-	else if (direction == 'd')
+	else if(direction == "DOWN")
 	{
-		while ((End->down)->TYPE != '#')
+		while(board[cur_biz_x][cur_biz_y] == '.')
 		{
-			End = End->down;
+			if(board[cur_biz_x][cur_biz_y + 1] == '#'
+				|| ((cur_biz_y + 1 == other.y) && cur_biz_x == other.x))
+			{
+				end.x = cur_biz_x;
+				end.y = cur_biz_y;
+				return end;
+			}
+			++cur_biz_y;
 		}
-		return End;
 	}
-
-	else if (direction == 'r')
+	else if(direction == "LEFT")
 	{
-		while ((End->right)->TYPE != '#')
+		while(board[cur_biz_x][cur_biz_y] == '.')
 		{
-			End = End->right;
+			if(board[cur_biz_x - 1][cur_biz_y] == '#'
+				|| ((cur_biz_x - 1 == other.x) && cur_biz_y == other.y))
+			{
+				end.x = cur_biz_x;
+				end.y = cur_biz_y;
+				return end;
+			}
+			--cur_biz_x;
 		}
-		return End;
 	}
-
-	else if (direction == 'l')
+	else if(direction == "RIGHT")
 	{
-		while ((End->left)->TYPE != '#')
+		while(board[cur_biz_x][cur_biz_y] == '.')
 		{
-			End = End->left;
+			if(board[cur_biz_x + 1][cur_biz_y] == '#'
+				|| ((cur_biz_x + 1 == other.x) && cur_biz_y == other.y))
+			{
+				end.x = cur_biz_x;
+				end.y = cur_biz_y;
+				return end;
+			}
+			++cur_biz_x;
 		}
-		return End;
 	}
-
-	return End;
 }
 
-void moveBiz(boardObject* board_R, boardObject* board_B, char direction)
+set TiltBoard_UP(char **board, position r, position b, string direction)
 {
-	if (direction == 'u')
+	set board_after;
+	if(r.y <= b.y)
 	{
-		bool RB{ false };
-		bool BR{ false };
-		boardObject* tmpBoardUp = board_R;
-		boardObject* tmpBoardDown = board_R;
-
-		while ((tmpBoardUp->up)->TYPE != '#')
+		while (FindEnd(board, r, b, "UP").y < r.y)
 		{
-			if ((tmpBoardUp->up)->BIZ == 'B')
+			if(board[r.x][r.y] == 'O')
 			{
-				bool RB = true;
+				board_after.redIn = true;
+				break;
 			}
-
-			tmpBoardUp = tmpBoardUp->up;
+			(r.y)--;
 		}
-
-		while ((tmpBoardDown->down)->TYPE != '#')
+		while (FindEnd(board, b, r, "UP").y < b.y)
 		{
-			if ((tmpBoardDown->down)->BIZ == 'B')
+			if(board[b.x][b.y] == 'O')
 			{
-				bool BR = true;
+				board_after.blueIn = true;
+				break;
 			}
-
-			tmpBoardDown = tmpBoardDown->down;
-		}
-
-		board_R->BIZ = 0;
-		board_B->BIZ = 0;
-
-		if (RB)
-		{
-			(board_R->U_end)->BIZ = 'R';
-			((board_R->U_end)->left)->BIZ = 'B';
-		}
-		else if (BR)
-		{
-			(board_R->U_end)->BIZ = 'B';
-			((board_R->U_end)->left)->BIZ = 'R';
-		}
-		else
-		{
-			(board_R->U_end)->BIZ = 'R';
-			(board_B->U_end)->BIZ = 'B';
+			(b.y)--;
 		}
 	}
-	else if (direction == 'd')
+	else if(r.y > b.y)
 	{
-		board_R->BIZ = 0;
-		(board_R->D_end)->BIZ = 'R';
-	}
-	else if (direction == 'r')
-	{
-		bool RB{ false };
-		bool BR{ false };
-		boardObject* tmpBoardRight = board_R;
-		boardObject* tmpBoardLeft = board_R;
-
-		while ((tmpBoardRight->right)->TYPE != '#')
+		while (FindEnd(board, b, r, "UP").y < b.y)
 		{
-			if ((tmpBoardRight->right)->BIZ == 'B')
+			if(board[b.x][b.y] == 'O')
 			{
-				bool RB = true;
+				board_after.blueIn = true;
+				break;
 			}
-
-			tmpBoardRight = tmpBoardRight->right;
+			(b.y)--;
 		}
-
-		while ((tmpBoardLeft->left)->TYPE != '#' && !RB)
+		while (FindEnd(board, r, b, "UP").y < r.y)
 		{
-			if ((tmpBoardLeft->left)->BIZ == 'B')
+			if(board[r.x][r.y] == 'O')
 			{
-				bool BR = true;
+				board_after.redIn = true;
+				break;
 			}
-
-			tmpBoardRight = tmpBoardLeft->left;
-		}
-
-		board_R->BIZ = 0;
-		board_B->BIZ = 0;
-
-		if (RB)
-		{
-			(board_R->R_end)->BIZ = 'B';
-			((board_R->R_end)->left)->BIZ = 'R';
-		}
-		else if (BR)
-		{
-			(board_R->R_end)->BIZ = 'R';
-			((board_R->R_end)->left)->BIZ = 'B';
-		}
-		else
-		{
-			(board_R->R_end)->BIZ = 'R';
-			(board_B->R_end)->BIZ = 'B';
+			(r.y)--;
 		}
 	}
-	else if (direction == 'l')
+	board_after.RED = r;
+	board_after.BLUE = b;
+	return board_after;	
+}
+
+set TiltBoard_DOWN(char **board, position r, position b, string direction)
+{
+	set board_after;
+	if(r.y <= b.y)
 	{
-		bool RB{ false };
-		bool BR{ false };
-		boardObject* tmpBoardRight = board_R;
-		boardObject* tmpBoardLeft = board_R;
-
-		while ((tmpBoardRight->right)->TYPE != '#')
+		while (b.y < FindEnd(board, b, r, "DOWN").y)
 		{
-			if ((tmpBoardRight->right)->BIZ == 'B')
+			if(board[b.x][b.y] == 'O')
 			{
-				bool RB = true;
+				board_after.blueIn = true;
+				break;
 			}
-
-			tmpBoardRight = tmpBoardRight->right;
+			(b.y)++;
 		}
-
-		while ((tmpBoardLeft->left)->TYPE != '#' && !RB)
+		while (r.y < FindEnd(board, r, b, "DOWN").y)
 		{
-			if ((tmpBoardLeft->left)->BIZ == 'B')
+			if(board[r.x][r.y] == 'O')
 			{
-				bool BR = true;
+				board_after.redIn = true;
+				break;
 			}
-
-			tmpBoardRight = tmpBoardLeft->left;
+			(r.y)++;
 		}
-
-		board_R->BIZ = 0;
-		board_B->BIZ = 0;
-
-		if (RB)
+	}
+	else if(r.y > b.y)
+	{
+		while (r.y < FindEnd(board, r, b, "DOWN").y)
 		{
-			(board_R->L_end)->BIZ = 'R';
-			((board_R->L_end)->left)->BIZ = 'B';
+			if(board[r.x][r.y] == 'O')
+			{
+				board_after.redIn = true;
+				break;
+			}
+			(r.y)++;
 		}
-		else if (BR)
+		while (b.y < FindEnd(board, b, r, "DOWN").y)
 		{
-			(board_R->L_end)->BIZ = 'B';
-			((board_R->L_end)->left)->BIZ = 'R';
+			if(board[b.x][b.y] == 'O')
+			{
+				board_after.blueIn = true;
+				break;
+			}
+			(b.y)++;
 		}
-		else
+	}
+	board_after.RED = r;
+	board_after.BLUE = b;
+	return board_after;
+}
+
+set TiltBoard_LEFT(char **board, position r, position b, string direction)
+{
+	set board_after;
+	if(r.x <= b.x)
+	{
+		while (FindEnd(board, r, b, "LEFT").x < r.x)
 		{
-			(board_R->L_end)->BIZ = 'R';
-			(board_B->L_end)->BIZ = 'B';
+			if(board[r.x][r.y] == 'O')
+			{
+				board_after.redIn = true;
+				break;
+			}
+			(r.x)--;
 		}
+		while (FindEnd(board, b, r, "LEFT").x < b.x)
+		{
+			if(board[b.x][b.y] == 'O')
+			{
+				board_after.blueIn = true;
+				break;
+			}
+			(b.x)--;
+		}
+	}
+	else if(r.x > b.x)
+	{
+		while (FindEnd(board, b, r, "LEFT").x < b.x)
+		{
+			if(board[b.x][b.y] == 'O')
+			{
+				board_after.blueIn = true;
+				break;
+			}
+			(b.x)--;
+		}
+		while (FindEnd(board, r, b, "LEFT").x < r.x)
+		{
+			if(board[r.x][r.y] == 'O')
+			{
+				board_after.redIn = true;
+				break;
+			}
+			(r.x)--;
+		}
+	}
+	board_after.RED = r;
+	board_after.BLUE = b;
+	return board_after;
+}
+
+set TiltBoard_RIGHT(char **board, position r, position b, string direction)
+{
+	set board_after;
+	if(r.x <= b.x)
+	{
+		while (b.x < FindEnd(board, b, r, "RIGHT").x)
+		{
+			if(board[b.x][b.y] == 'O')
+			{
+				board_after.blueIn = true;
+				break;
+			}
+			(b.x)++;
+		}
+		while (r.x < FindEnd(board, r, b, "DOWN").x)
+		{
+			if(board[r.x][r.y] == 'O')
+			{
+				board_after.redIn = true;
+				break;
+			}
+			(r.x)++;
+		}
+	}
+	else if(r.x > b.x)
+	{
+		while (r.x < FindEnd(board, r, b, "DOWN").x)
+		{
+			if(board[r.x][r.y] == 'O')
+			{
+				board_after.redIn = true;
+				break;
+			}
+			(r.x)++;
+		}
+		while (b.x < FindEnd(board, b, r, "DOWN").x)
+		{
+			if(board[b.x][b.y] == 'O')
+			{
+				board_after.blueIn = true;
+				break;
+			}
+			(b.x)++;
+		}
+	}
+	board_after.RED = r;
+	board_after.BLUE = b;
+	return board_after;
+}
+
+set TiltBoard(char **board, position r, position b, string direction)
+{
+	set board_after;
+
+	if(direction == "UP")
+	{
+		return TiltBoard_UP(board, r, b, "UP");
+	}
+	else if(direction == "DOWN")
+	{
+		return TiltBoard_DOWN(board, r, b, "DOWN");
+	}
+	else if(direction == "LEFT")
+	{
+		return TiltBoard_LEFT(board, r, b, "LEFT");
+	}
+	else if(direction == "RIGHT")
+	{
+		return TiltBoard_LEFT(board, r, b, "RIGHT");
 	}
 }
 
 int main()
 {
-	int BOARD_WIDTH{ 0 }, BOARD_HEIGHT{ 0 };
-	cin >> BOARD_HEIGHT >> BOARD_WIDTH;
+	int width{0}, height{0};
+	cin >> height >> width;
+	set BIZ_SET;
+	BIZ_SET.blueIn = false;
+	BIZ_SET.redIn = false;
 
-	boardObject* Goal;
+	char **board = new char*[width];
+	for (int i = 0 ; i < width ; i++)
+		board[i] = new char[height];
+	
+	for (int y = 0 ; y < height ; y++)
+		for (int x = 0 ; x < width ; x++)
+		{
+			cin >> board[x][y];
+			if(board[x][y] == 'R')
+			{
+				BIZ_SET.RED.x = x;
+				BIZ_SET.RED.y = y;
+				board[x][y] = '.';
+			}
+			else if(board[x][y] == 'B')
+			{
+				BIZ_SET.BLUE.x = x;
+				BIZ_SET.BLUE.y = y;
+				board[x][y] = '.';
+			}
+		}
 
-	/***** SETTING START *****/
-
-	// 2ND Dimension Array Dynamic Allocation
-	boardObject** board = new boardObject * [BOARD_WIDTH];
-	for (int i = 0; i < BOARD_WIDTH; i++)
+	vector<set> dfs;
+	int depth = 0;
+	dfs.push_back(BIZ_SET);
+	while(depth < 10)
 	{
-		board[i] = new boardObject[BOARD_HEIGHT];
+		bool outerBreak = false;
+		depth++;
+		for(int i = 0 ; i < 4 ; i++)
+		{
+			dfs.push_back(TiltBoard(board, dfs[0].RED, dfs[0].BLUE, directions[i]));
+			if(dfs[dfs.size() - 1].redIn && !dfs[dfs.size() - 1].blueIn)
+			{
+				outerBreak = true;
+				break;
+			}
+		}
+		if(outerBreak) break;
+		dfs.erase(dfs.begin());
 	}
 
-	// Setting Current
-	for (int i = 0; i < BOARD_HEIGHT; i++)
-		for (int j = 0; j < BOARD_WIDTH; j++)
-		{
-			char board_tmp;
-			cin >> board_tmp;
-			
-			// set type '.' when the input is R or B, and indicates the existence of a biz. 
-			if (board_tmp != 'R' && board_tmp != 'B')
-			{
-				board[j][i].TYPE = board_tmp;
-				board[j][i].BIZ = 0;
-
-				if (board_tmp == 'O')
-					Goal = &(board[j][i]);
-			}
-			else
-			{
-				board[j][i].TYPE = '.';
-				board[j][i].BIZ = board_tmp;
-			}
-
-			board[j][i].x = j;
-			board[j][i].y = i;
-		}
-
-	// Setting the Relevants
-	for (int i = 0; i < BOARD_HEIGHT; i++)
-		for (int j = 0; j < BOARD_WIDTH; j++)
-		{
-			// LEFT
-			if (j != 0)
-			{
-				board[j][i].left = &board[j - 1][i];
-			}
-
-			// RIGHT
-			if (j <= (BOARD_WIDTH - 1) - 1)
-			{
-				board[j][i].right = &board[j + 1][i];
-			}
-
-			// UP
-			if (i != 0)
-			{
-				board[j][i].up = &board[j][i - 1];
-			}
-
-			// DOWN
-			if (i <= (BOARD_HEIGHT - 1) - 1)
-			{
-				board[j][i].down = &board[j][i + 1];
-			}
-		}
-
-	// Setting the Ends
-	for (int i = 0; i < BOARD_HEIGHT; i++)
-		for (int j = 0; j < BOARD_WIDTH; j++)
-		{
-			// LEFT
-			if (j != 0)
-			{
-				board[j][i].U_end = searchEnd(&board[j][i], 'l');
-			}
-
-			// RIGHT
-			if (j != BOARD_WIDTH - 1)
-			{
-				board[j][i].right = searchEnd(&board[j][i], 'r');
-			}
-
-			// UP
-			if (i != 0)
-			{
-				board[j][i].up = searchEnd(&board[j][i], 'u');
-			}
-
-			// DOWN
-			if (i != BOARD_HEIGHT - 1)
-			{
-				board[j][i].down = searchEnd(&board[j][i], 'd');
-			}
-		}
-
-	/***** SETTING END *****/
-
-	/***** SOLUTION STARTS *****/
-
-	int cnt{ 0 };
-
-	while (cnt <= 10 || Goal->BIZ != 'R')
-	{
-
-
-		cnt++;
-	}
-
-	/***** SOLUTION ENDS *****/
-
+	if(depth <= 10)
+		cout << depth;
+	else
+		cout << -1;
+	
 	return 0;
 }
