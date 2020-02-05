@@ -84,225 +84,213 @@ position FindEnd(char **board, position biz, position other, string direction)
 	}
 }
 
-set TiltBoard_UP(char **board, position r, position b, string direction)
+set TiltBoard_UP(char **board, set bizSet)
 {
-	set board_after;
-	if(r.y <= b.y)
+	if(bizSet.RED.y <= bizSet.BLUE.y)
 	{
-		while (FindEnd(board, r, b, "UP").y < r.y)
+		while (FindEnd(board, bizSet.RED, bizSet.BLUE, "UP").y < bizSet.RED.y)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.y)--;
+			(bizSet.RED.y)--;
 		}
-		while (FindEnd(board, b, r, "UP").y < b.y)
+		while (FindEnd(board, bizSet.BLUE, bizSet.RED, "UP").y < bizSet.BLUE.y)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.y)--;
+			(bizSet.BLUE.y)--;
 		}
 	}
-	else if(r.y > b.y)
+	else if(bizSet.RED.y > bizSet.BLUE.y)
 	{
-		while (FindEnd(board, b, r, "UP").y < b.y)
+		while (FindEnd(board, bizSet.BLUE, bizSet.RED, "UP").y < bizSet.BLUE.y)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.y)--;
+			(bizSet.BLUE.y)--;
 		}
-		while (FindEnd(board, r, b, "UP").y < r.y)
+		while (FindEnd(board, bizSet.RED, bizSet.BLUE, "UP").y < bizSet.RED.y)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.y)--;
+			(bizSet.RED.y)--;
 		}
 	}
-	board_after.RED = r;
-	board_after.BLUE = b;
-	return board_after;	
+	return bizSet;	
 }
 
-set TiltBoard_DOWN(char **board, position r, position b, string direction)
+set TiltBoard_DOWN(char **board, set bizSet)
 {
-	set board_after;
-	if(r.y <= b.y)
+	if(bizSet.RED.y <= bizSet.BLUE.y)
 	{
-		while (b.y < FindEnd(board, b, r, "DOWN").y)
+		while (bizSet.BLUE.y < FindEnd(board, bizSet.BLUE, bizSet.RED, "DOWN").y)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.y)++;
+			(bizSet.BLUE.y)++;
 		}
-		while (r.y < FindEnd(board, r, b, "DOWN").y)
+		while (bizSet.RED.y < FindEnd(board, bizSet.RED, bizSet.BLUE, "DOWN").y)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.y)++;
+			(bizSet.RED.y)++;
 		}
 	}
-	else if(r.y > b.y)
+	else if(bizSet.RED.y > bizSet.BLUE.y)
 	{
-		while (r.y < FindEnd(board, r, b, "DOWN").y)
+		while (bizSet.RED.y < FindEnd(board, bizSet.RED, bizSet.BLUE, "DOWN").y)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.y)++;
+			(bizSet.RED.y)++;
 		}
-		while (b.y < FindEnd(board, b, r, "DOWN").y)
+		while (bizSet.BLUE.y < FindEnd(board, bizSet.BLUE, bizSet.RED, "DOWN").y)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.y)++;
+			(bizSet.BLUE.y)++;
 		}
 	}
-	board_after.RED = r;
-	board_after.BLUE = b;
-	return board_after;
+	return bizSet;
 }
 
-set TiltBoard_LEFT(char **board, position r, position b, string direction)
+set TiltBoard_LEFT(char **board, set bizSet)
 {
-	set board_after;
-	if(r.x <= b.x)
+	if(bizSet.RED.x <= bizSet.BLUE.x)
 	{
-		while (FindEnd(board, r, b, "LEFT").x < r.x)
+		while (FindEnd(board, bizSet.RED, bizSet.BLUE, "LEFT").x < bizSet.RED.x)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.x)--;
+			(bizSet.RED.x)--;
 		}
-		while (FindEnd(board, b, r, "LEFT").x < b.x)
+		while (FindEnd(board, bizSet.BLUE, bizSet.RED, "LEFT").x < bizSet.BLUE.x)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.x)--;
+			(bizSet.BLUE.x)--;
 		}
 	}
-	else if(r.x > b.x)
+	else if(bizSet.RED.x > bizSet.BLUE.x)
 	{
-		while (FindEnd(board, b, r, "LEFT").x < b.x)
+		while (FindEnd(board, bizSet.BLUE, bizSet.RED, "LEFT").x < bizSet.BLUE.x)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.x)--;
+			(bizSet.BLUE.x)--;
 		}
-		while (FindEnd(board, r, b, "LEFT").x < r.x)
+		while (FindEnd(board, bizSet.RED, bizSet.BLUE, "LEFT").x < bizSet.RED.x)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.x)--;
+			(bizSet.RED.x)--;
 		}
 	}
-	board_after.RED = r;
-	board_after.BLUE = b;
-	return board_after;
+	return bizSet;
 }
 
-set TiltBoard_RIGHT(char **board, position r, position b, string direction)
+set TiltBoard_RIGHT(char **board, set bizSet)
 {
-	set board_after;
-	if(r.x <= b.x)
+	if(bizSet.RED.x <= bizSet.BLUE.x)
 	{
-		while (b.x < FindEnd(board, b, r, "RIGHT").x)
+		while (bizSet.BLUE.x < FindEnd(board, bizSet.BLUE, bizSet.RED, "RIGHT").x)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.x)++;
+			(bizSet.BLUE.x)++;
 		}
-		while (r.x < FindEnd(board, r, b, "DOWN").x)
+		while (bizSet.RED.x < FindEnd(board, bizSet.RED, bizSet.BLUE, "RIGHT").x)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.x)++;
+			(bizSet.RED.x)++;
 		}
 	}
-	else if(r.x > b.x)
+	else if(bizSet.RED.x > bizSet.BLUE.x)
 	{
-		while (r.x < FindEnd(board, r, b, "DOWN").x)
+		while (bizSet.RED.x < FindEnd(board, bizSet.RED, bizSet.BLUE, "RIGHT").x)
 		{
-			if(board[r.x][r.y] == 'O')
+			if(board[bizSet.RED.x][bizSet.RED.y] == 'O')
 			{
-				board_after.redIn = true;
+				bizSet.redIn = true;
 				break;
 			}
-			(r.x)++;
+			(bizSet.RED.x)++;
 		}
-		while (b.x < FindEnd(board, b, r, "DOWN").x)
+		while (bizSet.BLUE.x < FindEnd(board, bizSet.BLUE, bizSet.RED, "RIGHT").x)
 		{
-			if(board[b.x][b.y] == 'O')
+			if(board[bizSet.BLUE.x][bizSet.BLUE.y] == 'O')
 			{
-				board_after.blueIn = true;
+				bizSet.blueIn = true;
 				break;
 			}
-			(b.x)++;
+			(bizSet.BLUE.x)++;
 		}
 	}
-	board_after.RED = r;
-	board_after.BLUE = b;
-	return board_after;
+	return bizSet;
 }
 
-set TiltBoard(char **board, position r, position b, string direction)
+set TiltBoard(char **board, set bizSet, string direction)
 {
 	set board_after;
 
 	if(direction == "UP")
 	{
-		return TiltBoard_UP(board, r, b, "UP");
+		return TiltBoard_UP(board, bizSet);
 	}
 	else if(direction == "DOWN")
 	{
-		return TiltBoard_DOWN(board, r, b, "DOWN");
+		return TiltBoard_DOWN(board, bizSet);
 	}
 	else if(direction == "LEFT")
 	{
-		return TiltBoard_LEFT(board, r, b, "LEFT");
+		return TiltBoard_LEFT(board, bizSet);
 	}
 	else if(direction == "RIGHT")
 	{
-		return TiltBoard_LEFT(board, r, b, "RIGHT");
+		return TiltBoard_RIGHT(board, bizSet);
 	}
 }
 
@@ -318,8 +306,8 @@ int main()
 	for (int i = 0 ; i < width ; i++)
 		board[i] = new char[height];
 	
-	for (int y = 0 ; y < height ; y++)
-		for (int x = 0 ; x < width ; x++)
+	for (int x = 0 ; x < height ; x++)
+		for (int y = 0 ; y < height ; y++)
 		{
 			cin >> board[x][y];
 			if(board[x][y] == 'R')
@@ -339,14 +327,15 @@ int main()
 	vector<set> dfs;
 	int depth = 0;
 	dfs.push_back(BIZ_SET);
-	while(depth < 10)
+	while(true)
 	{
 		bool outerBreak = false;
 		depth++;
 		for(int i = 0 ; i < 4 ; i++)
 		{
-			dfs.push_back(TiltBoard(board, dfs[0].RED, dfs[0].BLUE, directions[i]));
-			if(dfs[dfs.size() - 1].redIn && !dfs[dfs.size() - 1].blueIn)
+			dfs.push_back(TiltBoard(board, dfs[0], directions[i]));
+			
+			if(dfs[dfs.size() - 1].redIn && !(dfs[dfs.size() - 1].blueIn))
 			{
 				outerBreak = true;
 				break;
