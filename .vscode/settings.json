@@ -7,7 +7,10 @@
         "iostream": "cpp",
         "new": "cpp",
         "iosfwd": "cpp",
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "limits": "cpp",
+        "*.tcc": "cpp",
+        "string_view": "cpp"
     },
     "files.exclude": {
         "**/.classpath": true,
