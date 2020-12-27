@@ -3,7 +3,7 @@
 
 using namespace std;
 
-int maxlower_index(vector<int>* arr, int val)
+int maxlower_index(const vector<int>* arr, int val)
 {
 	int begin = 0;
 	int end = arr->size() - 1;
@@ -32,7 +32,7 @@ int maxlower_index(vector<int>* arr, int val)
 	else return begin - 1;
 }
 
-int LIS_Length(vector<int> arr)
+int LIS_Length(const vector<int>& arr)
 {
 	int length = arr.size();
 

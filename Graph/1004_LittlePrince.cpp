@@ -11,8 +11,7 @@ public:
 	int x;
 	int y;
 	int r;
-	int depth;
-	enum class State { NOT_SEARCHING, NOT_VISITED, VISITED  };
+	enum class State { NOT_SEARCHING, NOT_VISITED, VISITED };
 	State nodeState;
 	vector<PlanSys*> adjacents;
 
@@ -21,7 +20,6 @@ public:
 		x = x_;
 		y = y_;
 		r = r_;
-		depth = 0;
 		nodeState = State::NOT_SEARCHING;
 	}
 };
@@ -56,20 +54,7 @@ public:
 		b->adjacents.push_back(a);
 	}
 
-	PlanSys* FindSys(int x, int y, int r)
-	{
-		for (PlanSys* p : nodes)
-		{
-			if (p->x == x && p->y == y && p->r == r)
-			{
-				return p;
-			}
-		}
-
-		return NULL;
-	}
-
-	PlanSys* FindMinSys(int x, int y)
+	PlanSys* FindMinSys(PlanSys* psys)
 	{
 		PlanSys* minP = NULL;
 
@@ -77,7 +62,7 @@ public:
 
 		for (PlanSys* p : nodes)
 		{
-			double d = distance(new PlanSys(x, y, 0), p);
+			double d = distance(psys, p);
 			if (d < static_cast<double>(p->r) && (minP == NULL || p->r < minP->r))
 			{
 				minP = p;
@@ -128,37 +113,6 @@ public:
 		answer = psysQ.front()->depth;
 	}
 
-	void AddDirectParents(PlanSys* psys)
-	{
-		PlanSys* minP = NULL;
-
-		//d < static_cast<double>(p->r) && psys->r < p->r
-
-		for (PlanSys* p : nodes)
-		{
-			double d = distance(psys, p);
-			if (d < (static_cast<double>(p->r) - static_cast<double>(psys->r)) && (minP == NULL || p->r < minP->r))
-			{
-				minP = p;
-			}
-		}
-
-		AddLink(psys, minP);
-
-		/*
-
-		for (PlanSys* p : nodes)
-		{
-			double d = distance(psys, p);
-			if (psys != p && d < static_cast<double>(p->r) && psys->r < p->r)
-			{
-				AddLink(psys, p);
-			}
-		}
-
-		*/
-	}
-
 	double distance(PlanSys* a, PlanSys* b)
 	{
 		return sqrt(pow(a->x - b->x, 2) + pow(a->y - b->y, 2));
@@ -188,12 +142,12 @@ int main()
 			g->AddSys(new PlanSys(cx, cy, r));
 		}
 
-		g->departure = g->FindMinSys(x1, y1);
-		g->arrival = g->FindMinSys(x2, y2);
+		g->departure = g->FindMinSys(new PlanSys(x1, y1, 0));
+		g->arrival = g->FindMinSys(new PlanSys(x2, y2, 0));
 		
-		for (int i  = 1 ; i < g->nodes.size() ; i++)
+		for (int i = 1 ; i < g->nodes.size() ; i++)
 		{
-			g->AddDirectParents(g->nodes[i]);
+			g->AddLink(g->nodes[i], g->FindMinSys(g->nodes[i]));
 		}
 		g->Start_BFS();
 		
