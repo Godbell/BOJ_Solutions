@@ -11,6 +11,7 @@ public:
 	int x;
 	int y;
 	int r;
+	int depth;
 	enum class State { NOT_SEARCHING, NOT_VISITED, VISITED };
 	State nodeState;
 	vector<PlanSys*> adjacents;
@@ -20,6 +21,7 @@ public:
 		x = x_;
 		y = y_;
 		r = r_;
+		depth = 0;
 		nodeState = State::NOT_SEARCHING;
 	}
 };
@@ -57,8 +59,6 @@ public:
 	PlanSys* FindMinSys(PlanSys* psys)
 	{
 		PlanSys* minP = NULL;
-
-		//d < static_cast<double>(p->r) && psys->r < p->r
 
 		for (PlanSys* p : nodes)
 		{
