@@ -33,17 +33,33 @@ int main()
 			if (i < N)
 			{
 				answer.push_back(
-					((static_cast<__int16>(index) / factorial[N - i] + 1))
+					(static_cast<__int16>(index) / factorial[N - i]) + 1
 				);
-
-				if (index > factorial[N - i - 1])
-				{
-					index -= factorial[N - i - 1];
-				}
 			}
 			else
 			{
-				
+				int notIncluded = 0;
+				for (int targetNumber = 1; targetNumber <= N; targetNumber++)
+				{
+					bool isIncluded = false;
+					for (int index = 1; index <= N; index++)
+					{
+						if (answer[index] == targetNumber)
+						{
+							bool isIncluded = true;
+							break;
+						}
+					}
+
+					if (isIncluded == true) continue;
+					else
+					{
+						notIncluded = targetNumber;
+						break;
+					}
+				}
+			
+				answer.push_back(notIncluded);
 			}
 		}
 
