@@ -37,11 +37,9 @@ for i in range(numberOfItems):
     if weight > maxWeight: continue
     items[i].weight = weight
     items[i].value = value
-    itemNodesWithWeightForIndex[weight] = ItemNode(items[i])
 
 for weight in range(1, maxWeight + 1):
     node = itemNodesWithWeightForIndex[weight]
-    if node.currentWeight == 0: continue
     for item in items:
         if node.isVisited(item.id): continue
         nextWeight = node.currentWeight + item.weight
@@ -50,9 +48,6 @@ for weight in range(1, maxWeight + 1):
         if itemNodesWithWeightForIndex[nextWeight].currentValue < nextValue:
             itemNodesWithWeightForIndex[nextWeight] = node.appended(item)
 
-maxValue = 0
-for weight in range(1, maxWeight + 1):
-    if itemNodesWithWeightForIndex[weight].currentValue > maxValue:
-        maxValue = itemNodesWithWeightForIndex[weight].currentValue
-
-stdout.write(str(maxValue))
+stdout.write(
+    str(max(itemNodesWithWeightForIndex, key=lambda x:x.currentValue).currentValue)
+)
